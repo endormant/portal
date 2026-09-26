@@ -47,8 +47,9 @@ a{color:inherit;text-decoration:none}
 button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,.wheel:focus-visible{outline:2px solid var(--text);outline-offset:2px}
 .app{
   max-width:640px; margin:0 auto;
-  padding:max(14px,env(safe-area-inset-top)) max(22px,env(safe-area-inset-right)) max(120px,calc(env(safe-area-inset-bottom) + 100px)) max(22px,env(safe-area-inset-left));
+  padding:max(14px,env(safe-area-inset-top)) max(22px,env(safe-area-inset-right)) calc(var(--tabh) + 28px) max(22px,env(safe-area-inset-left));
 }
+body.no-tabbar .app{ padding-bottom: max(120px,calc(env(safe-area-inset-bottom) + 100px)); }
 
 /* nav */
 .nav{display:flex;align-items:center;justify-content:space-between;min-height:44px}
@@ -103,7 +104,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,
 .gh .cnt{font-size:13.5px;color:var(--muted)}
 .plus{width:30px;height:30px;border-radius:50%;background:var(--surface);display:grid;place-items:center;color:var(--muted)}
 
-.fab{position:fixed;left:50%;transform:translateX(-50%);bottom:max(22px,calc(env(safe-area-inset-bottom) + 10px));background:var(--ink);color:var(--ink-fg);padding:15px 28px;border-radius:999px;font-weight:600;font-size:15px;white-space:nowrap}
+.fab{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(var(--tabh) + 14px);background:var(--ink);color:var(--ink-fg);padding:15px 28px;border-radius:999px;font-weight:600;font-size:15px;white-space:nowrap}
 .fab:active{opacity:.8}
 
 /* day header + week strip (habits and sleep) */
@@ -246,6 +247,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,
 .addset{width:100%;padding:12px 0;margin-top:8px;text-align:center;color:var(--muted);font-size:14px;font-weight:600;background:var(--surface);border-radius:10px}
 .addset:active{opacity:.6}
 .addex{width:100%;padding:14px 0;text-align:center;color:var(--text);font-weight:600;font-size:15px;background:var(--surface);border-radius:14px;margin-top:6px}
+body.no-tabbar .finishbar{padding-bottom:max(14px,calc(env(safe-area-inset-bottom) + 10px))}
 .finishbar{position:fixed;left:0;right:0;bottom:0;display:flex;gap:10px;padding:12px max(22px,env(safe-area-inset-right)) max(14px,calc(env(safe-area-inset-bottom) + 10px)) max(22px,env(safe-area-inset-left));background:var(--bg);border-top:1px solid var(--line)}
 .finishbar .btn{flex:1;text-align:center;padding:13px 0}
 
@@ -283,6 +285,31 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,
 .histrow .d{color:var(--muted)}
 .histrow .v{font-weight:600}
 .pr{color:var(--text);font-weight:700}
+
+/* progress ring (home) */
+.ringwrap{display:flex;justify-content:center;margin:6px 0 4px}
+.ring{width:min(190px,58vw);height:auto}
+.ring-bg{fill:none;stroke:var(--line);stroke-width:11}
+.ring-fg{fill:none;stroke:var(--ink);stroke-width:11;stroke-linecap:round;transition:stroke-dashoffset .4s ease}
+.ring-pct{fill:var(--text);font-size:34px;font-weight:700;letter-spacing:-.03em}
+.ring-sub{fill:var(--muted);font-size:12.5px}
+.bedcard{display:flex;align-items:center;gap:14px;background:var(--surface);border-radius:18px;padding:16px 18px;margin:22px 0 30px}
+.bedcard .bi{flex:none;color:var(--muted);display:flex}
+.bedcard b{display:block;font-size:19px;font-weight:600;letter-spacing:-.02em}
+.bedcard span{font-size:13px;color:var(--muted)}
+.homesec{margin-bottom:30px}
+.homesec .sh2{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:2px}
+.homesec .sh2 h2{margin:0;font-size:17px;font-weight:700;letter-spacing:-.02em}
+.homesec .sh2 small{color:var(--muted);font-size:13px}
+.homesec .allclear{padding:18px 0;color:var(--muted);font-size:14.5px}
+
+/* bottom tab bar */
+:root{ --tabh: calc(72px + env(safe-area-inset-bottom)); }
+#tabbar{position:fixed;left:50%;bottom:max(14px,calc(env(safe-area-inset-bottom) + 6px));transform:translateX(-50%);z-index:5;display:flex;gap:2px;width:max-content;max-width:calc(100% - 24px);background:color-mix(in srgb,var(--bg) 80%,transparent);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid var(--line);border-radius:999px;padding:6px;box-shadow:0 8px 28px rgba(0,0,0,.16)}
+body.no-tabbar #tabbar{display:none}
+#tabbar a{display:flex;justify-content:center;padding:0}
+#tabbar .tb{width:46px;height:46px;display:grid;place-items:center;border-radius:999px;color:var(--muted);transition:color .15s,background .15s}
+#tabbar a[aria-current=true] .tb{color:var(--text);background:var(--surface)}
 
 /* wheels */
 .wheels{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:6px}
@@ -347,6 +374,15 @@ dialog.popup{margin:auto;width:min(340px,calc(100% - 40px));border-radius:24px}
 </head>
 <body>
 <div class="app"><main id="view"></main></div>
+<nav id="tabbar">
+  <a href="#/" data-route=""><span class="tb" data-icon="home"></span></a>
+  <a href="#/habits" data-route="habits"><span class="tb" data-icon="habits"></span></a>
+  <a href="#/supplements" data-route="supplements"><span class="tb" data-icon="supplements"></span></a>
+  <a href="#/goals" data-route="goals"><span class="tb" data-icon="goals"></span></a>
+  <a href="#/todo" data-route="todo"><span class="tb" data-icon="todo"></span></a>
+  <a href="#/workouts" data-route="workouts"><span class="tb" data-icon="workouts"></span></a>
+  <a href="#/sleep" data-route="sleep"><span class="tb" data-icon="sleep"></span></a>
+</nav>
 
 <dialog id="sheet"><div class="sheet" id="sheetBody"></div></dialog>
 
@@ -428,6 +464,19 @@ const DATE_RE=/^\d{4}-\d{2}-\d{2}$/;
 
 const CHECK = '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
 const ICON = d => `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="${d}"/></svg>`;
+/* Plain placeholder icons for the tab bar and the bedtime card, meant to be swapped for
+   custom artwork later — each is a self-contained 24x24 stroke icon. */
+const TAB_SVG = w => `<svg viewBox="0 0 24 24" width="${w}" height="${w}" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">`;
+const TAB_ICONS = {
+  home: `${TAB_SVG(22)}<path d="M4 11.5 12 4l8 7.5"/><path d="M6 10v9a1 1 0 0 0 1 1h3v-6h4v6h3a1 1 0 0 0 1-1v-9"/></svg>`,
+  habits: `${TAB_SVG(22)}<rect x="4" y="4" width="16" height="16" rx="4.5"/><path d="M8.3 12.3l2.4 2.4 5-5"/></svg>`,
+  supplements: `${TAB_SVG(22)}<rect x="3.2" y="9.2" width="17.6" height="5.6" rx="2.8" transform="rotate(45 12 12)"/><path d="M12 6v12" transform="rotate(45 12 12)"/></svg>`,
+  goals: `${TAB_SVG(22)}<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4.3"/><circle cx="12" cy="12" r=".6" fill="currentColor"/></svg>`,
+  todo: `${TAB_SVG(22)}<path d="M9 6.5h9M9 12h9M9 17.5h9"/><path d="M5.2 6.5h.01M5.2 12h.01M5.2 17.5h.01" stroke-width="2.6"/></svg>`,
+  workouts: `${TAB_SVG(22)}<path d="M6.5 12h11"/><rect x="2.3" y="9" width="4" height="6" rx="1.2"/><rect x="17.7" y="9" width="4" height="6" rx="1.2"/></svg>`,
+  sleep: `${TAB_SVG(22)}<path d="M20 14.2A8.2 8.2 0 1 1 9.8 4 6.6 6.6 0 0 0 20 14.2Z"/></svg>`,
+};
+function paintTabIcons(){ document.querySelectorAll('#tabbar [data-icon]').forEach(el=>{ el.innerHTML=TAB_ICONS[el.dataset.icon]||''; }); }
 
 /* ---------- data ----------
    log["YYYY-MM-DD|habitId"] = timestamp (positive = done, negative = undone)
@@ -442,6 +491,7 @@ const F = {
   exercises:['t','m','c','u','del'],
   routines:['t','ex','c','u','del'],
   workouts:['t','rid','st','en','ex','c','u','del'],
+  supplements:['t','sched','time','c','u','del'],
 };
 function normItems(m,fields,idRe){
   const o={}; if(!m||typeof m!=='object') return o;
@@ -456,7 +506,7 @@ function normItems(m,fields,idRe){
   return o;
 }
 function normalize(x){
-  const out={log:{},habits:{},goals:{},todos:{},sleep:{},exercises:{},routines:{},workouts:{}};
+  const out={log:{},habits:{},goals:{},todos:{},sleep:{},exercises:{},routines:{},workouts:{},supplements:{}};
   if(!x||typeof x!=='object') return out;
   if(x.log) for(const k in x.log){
     const v=Number(x.log[k]);
@@ -471,19 +521,20 @@ function normalize(x){
   out.workouts=normItems(x.workouts,F.workouts);
   for(const id in out.routines){ const r=out.routines[id]; if(!Array.isArray(r.ex)) r.ex=[]; }
   for(const id in out.workouts){ const w=out.workouts[id]; if(!Array.isArray(w.ex)) w.ex=[]; w.st=Number(w.st)||0; w.en=w.en?Number(w.en):null; }
+  out.supplements=normItems(x.supplements,F.supplements);
   return out;
 }
 function mergeItems(a,b){ const o={...a}; for(const id in b){ if(!o[id]||b[id].u>o[id].u) o[id]=b[id]; } return o; }
 function merge(a,b){
   const log={...a.log};
   for(const k in b.log){ if(!(k in log)||Math.abs(b.log[k])>Math.abs(log[k])) log[k]=b.log[k]; }
-  return {log,habits:mergeItems(a.habits,b.habits),goals:mergeItems(a.goals,b.goals),todos:mergeItems(a.todos,b.todos),sleep:mergeItems(a.sleep,b.sleep),exercises:mergeItems(a.exercises,b.exercises),routines:mergeItems(a.routines,b.routines),workouts:mergeItems(a.workouts,b.workouts)};
+  return {log,habits:mergeItems(a.habits,b.habits),goals:mergeItems(a.goals,b.goals),todos:mergeItems(a.todos,b.todos),sleep:mergeItems(a.sleep,b.sleep),exercises:mergeItems(a.exercises,b.exercises),routines:mergeItems(a.routines,b.routines),workouts:mergeItems(a.workouts,b.workouts),supplements:mergeItems(a.supplements,b.supplements)};
 }
 const itemSig = m => Object.values(m).map(i=>i.id+':'+i.u).sort();
-const sig = s => JSON.stringify([Object.entries(s.log).sort(),itemSig(s.habits),itemSig(s.goals),itemSig(s.todos),itemSig(s.sleep),itemSig(s.exercises),itemSig(s.routines),itemSig(s.workouts)]);
+const sig = s => JSON.stringify([Object.entries(s.log).sort(),itemSig(s.habits),itemSig(s.goals),itemSig(s.todos),itemSig(s.sleep),itemSig(s.exercises),itemSig(s.routines),itemSig(s.workouts),itemSig(s.supplements)]);
 function serialize(s){
   const sortObj=o=>{ const r={}; Object.keys(o).sort().forEach(k=>r[k]=o[k]); return r; };
-  return JSON.stringify({v:5,log:sortObj(s.log),habits:sortObj(s.habits),goals:sortObj(s.goals),todos:sortObj(s.todos),sleep:sortObj(s.sleep),exercises:sortObj(s.exercises),routines:sortObj(s.routines),workouts:sortObj(s.workouts)},null,1);
+  return JSON.stringify({v:6,log:sortObj(s.log),habits:sortObj(s.habits),goals:sortObj(s.goals),todos:sortObj(s.todos),sleep:sortObj(s.sleep),exercises:sortObj(s.exercises),routines:sortObj(s.routines),workouts:sortObj(s.workouts),supplements:sortObj(s.supplements)},null,1);
 }
 
 let ver=0;                                   // bumped on every change; invalidates caches
@@ -496,7 +547,7 @@ function ensureSeeds(){
 }
 ensureSeeds();
 let cfg = LS.get(K_CFG,null);
-const ui = Object.assign({tab:'daily',range:'3M',stab:'log',srange:'1M',wtab:'log',wrange:'3M'}, LS.get(K_UI,{}));
+const ui = Object.assign({tab:'daily',range:'3M',stab:'log',srange:'1M',wtab:'log',wrange:'3M',supEdit:false}, LS.get(K_UI,{}));
 if(!['daily','overview'].includes(ui.tab)) ui.tab='daily';
 if(!['log','overview'].includes(ui.stab)) ui.stab='log';
 if(!RANGES[ui.range]) ui.range='3M';
@@ -601,6 +652,42 @@ const verdict = m => m>=GOAL ? 'Goal reached' : `${shortBy(GOAL-m)} short of 8 h
 function firstSleep(){
   let m=null; for(const k in store.sleep){ if(sleepEntry(k) && (m===null||k<m)) m=k; }
   return m?parse(m):null;
+}
+
+/* ---------- supplements: model ---------- */
+const SCHED_ORDER={morning:0,lunch:1,evening:2,time:3};
+const SCHED_LABEL={morning:'Morning',lunch:'Lunch',evening:'Evening'};
+let supc={v:-1,l:[]};
+const supplements = () => { if(supc.v!==ver) supc={v:ver,l:live(store.supplements).sort((a,b)=>(a.c||0)-(b.c||0))}; return supc.l; };
+function supSortKey(s){ return s.sched==='time' ? SCHED_ORDER.time*1440+toMin(s.time||'00:00') : SCHED_ORDER[s.sched]*1440; }
+function supSub(s){ return s.sched==='time' ? tm(toMin(s.time||'00:00')) : SCHED_LABEL[s.sched]||'Anytime'; }
+function supGroups(list){
+  const groups=[['morning','Morning'],['lunch','Lunch'],['evening','Evening'],['time','Specific times']];
+  return groups.map(([k,label])=>({label,items:list.filter(s=>s.sched===k).sort((a,b)=>supSortKey(a)-supSortKey(b))})).filter(g=>g.items.length);
+}
+
+/* ---------- today's overall completion (home progress ring) ---------- */
+function todayCompletion(T){
+  const tk=key(T);
+  const cats=[];
+  const due=dueFixed(T), weekly=habits().filter(h=>h.kind==='weekly');
+  const hTotal=due.length+weekly.length;
+  if(hTotal) cats.push({k:'habits',done:due.filter(h=>has(T,h.id)).length+weekly.filter(h=>has(T,h.id)).length,total:hTotal});
+  const sups=supplements();
+  if(sups.length) cats.push({k:'supplements',done:sups.filter(s=>has(T,s.id)).length,total:sups.length});
+  const goals=live(store.goals);
+  if(goals.length) cats.push({k:'goals',done:goals.filter(g=>g.x).length,total:goals.length});
+  const tasks=live(store.todos).filter(t=>t.d&&t.d<=tk&&(!t.x||t.d===tk));
+  if(tasks.length) cats.push({k:'tasks',done:tasks.filter(t=>t.x).length,total:tasks.length});
+  const done=cats.reduce((a,c)=>a+c.done,0), total=cats.reduce((a,c)=>a+c.total,0);
+  return {done,total,pct:total?done/total:0,cats};
+}
+/* A gentle bedtime suggestion: your average wake time over the last couple of weeks, minus the
+   8 hour goal. Falls back to a plain 7am wake if nothing has been logged yet. */
+function suggestedBedtime(T){
+  const mins=[]; for(let d=addDays(T,-13); d<=T; d=addDays(d,1)){ const e=sleepEntry(key(d)); if(e) mins.push(toMin(e.w)); }
+  const wake = mins.length ? Math.round(mins.reduce((a,b)=>a+b,0)/mins.length) : 420;
+  return { wake, bed:((wake-GOAL)+1440)%1440, has:mins.length>0 };
 }
 
 /* ---------- shared view pieces ---------- */
@@ -720,28 +807,83 @@ const byDue = (a,b) => {
 };
 
 /* ================= PORTAL (home) ================= */
+function ringSVG(pct,label){
+  const r=72,C=2*Math.PI*r,off=C*(1-Math.min(1,pct));
+  return `<svg class="ring" viewBox="0 0 180 180"><g transform="rotate(-90 90 90)">
+      <circle class="ring-bg" cx="90" cy="90" r="${r}"></circle>
+      <circle class="ring-fg" cx="90" cy="90" r="${r}" stroke-dasharray="${C.toFixed(1)}" stroke-dashoffset="${off.toFixed(1)}"></circle>
+    </g>
+    <text class="ring-pct" x="90" y="95" text-anchor="middle">${Math.round(pct*100)}%</text>
+    <text class="ring-sub" x="90" y="115" text-anchor="middle">${esc(label)}</text></svg>`;
+}
 function pagePortal(T){
-  const sc=dayScore(T);
-  const goalsOpen=live(store.goals).filter(g=>!g.x).length;
-  const todosOpen=live(store.todos).filter(t=>!t.x).length;
-  const sl=sleepEntry(key(T));
+  const comp=todayCompletion(T);
+  const bt=suggestedBedtime(T);
+  const tk=key(T);
+
+  const due=dueFixed(T), weekly=habits().filter(h=>h.kind==='weekly'&&!has(T,h.id));
+  const habitsLeft=[...due.filter(h=>!has(T,h.id)),...weekly];
+  const habitRows=habitsLeft.map(h=>habitRow(h,T,tk)).join('');
+
+  const supsLeft=supplements().filter(s=>!has(T,s.id));
+  const supRows=supsLeft.map(s=>`<button class="habit" data-act="h-toggle" data-id="${s.id}" data-date="${tk}" role="checkbox" aria-checked="false">
+      <span class="chk${justId===s.id?' pop':''}">${CHECK}</span>
+      <span class="txt"><span class="nm">${esc(s.t)}</span><span class="sb">${supSub(s)}</span></span></button>`).join('');
+
+  const tasksLeft=live(store.todos).filter(t=>!t.x&&t.d&&t.d<=tk).sort(byDue);
+  const taskRows=tasksLeft.map(t=>todoRow(t,T)).join('');
+
+  const sec=(icon,name,rows,href)=>{
+    if(!rows) return `<section class="homesec"><div class="sh2"><h2>${icon} ${name}</h2><small>All done</small></div><div class="allclear">Nothing left for today.</div></section>`;
+    return `<section class="homesec"><div class="sh2"><h2>${icon} ${name}</h2><a href="${href}" style="font-size:13px;color:var(--muted)">See all</a></div>${rows}</section>`;
+  };
+
   return `
     <header class="nav"><span></span><button class="sync" id="sync" data-act="settings" data-s="local"><span class="dot"></span><span id="syncTxt">Local only</span></button></header>
     <h1 class="big">Portal</h1>
     <p class="sub">${fmt(T,{weekday:'long',day:'numeric',month:'long'})}</p>
-    <nav>
-      <a class="mrow" href="#/habits"><span>Habits</span><small>${sc.done} of ${sc.total} today</small></a>
-      <a class="mrow" href="#/sleep"><span>Sleep</span><small>${sl?hm(sleepDur(sl))+' last night':'not logged'}</small></a>
-      <a class="mrow" href="#/workouts"><span>Workouts</span><small>${(() => { const av=activeWorkout(); if(av) return 'in progress'; const last=doneWorkouts()[0]; return last?timeAgoShort(last.st):'none yet'; })()}</small></a>
-      <a class="mrow" href="#/goals"><span>Goals</span><small>${goalsOpen} open</small></a>
-      <a class="mrow" href="#/todo"><span>To-do</span><small>${todosOpen?todosOpen+' open':'all clear'}</small></a>
-    </nav>`;
+    <div class="ringwrap">${ringSVG(comp.pct,comp.total?`${comp.done} of ${comp.total} done`:'Nothing tracked yet')}</div>
+    <div class="bedcard"><span class="bi">🌙</span><div><b>Bed by ${tm(bt.bed)}</b><span>${bt.has?'Based on your recent wake times':'Default 7:00 AM wake, log sleep to personalise'}</span></div></div>
+    ${sec('','Supplements',supRows,'#/supplements')}
+    ${sec('','Tasks',taskRows,'#/todo')}
+    ${sec('','Habits',habitRows,'#/habits')}`;
+}
+
+/* ================= SUPPLEMENTS ================= */
+function pageSupplements(T){
+  const tk=key(T);
+  const all=supplements();
+  const fab=`<button class="fab" data-act="sup-new">New supplement</button>`;
+  if(!all.length) return `<h1 class="title">Supplements</h1><div class="empty"><b>No supplements yet</b>Add one with the button below.</div>${fab}`;
+
+  if(ui.supEdit){
+    const rows=all.map(s=>`<button class="habit" data-act="sup-edit" data-id="${s.id}"><span class="txt"><span class="nm">${esc(s.t)}</span><span class="sb">${supSub(s)}</span></span>${ICON('M9 5l7 7-7 7')}</button>`).join('');
+    return `<div class="dayhead"><div><h2>Edit supplements</h2><p>Tap one to change or delete it</p></div><button class="pill" data-act="sup-editmode">Done</button></div>${rows}${fab}`;
+  }
+
+  const done=all.filter(s=>has(T,s.id)).length;
+  const pct=all.length?Math.round(done/all.length*100):0;
+  const groups=supGroups(all).map(g=>`
+    <h2 class="h2">${g.label}</h2>
+    <div>${g.items.map(s=>{
+      const taken=has(T,s.id);
+      return `<button class="habit${taken?' done':''}" data-act="h-toggle" data-id="${s.id}" data-date="${tk}" role="checkbox" aria-checked="${taken}">
+        <span class="chk${justId===s.id?' pop':''}">${CHECK}</span>
+        <span class="txt"><span class="nm">${esc(s.t)}</span><span class="sb">${supSub(s)}</span></span></button>`;
+    }).join('')}</div>`).join('');
+
+  return `
+    <div class="dayhead"><div><h2>Today</h2><p>${fmt(T,{weekday:'long',day:'numeric',month:'long'})}</p></div></div>
+    <div class="prog"><span>${done} of ${all.length} taken</span><div class="bar"><i style="width:${pct}%"></i></div></div>
+    ${groups}
+    <button class="link" data-act="sup-editmode">Edit supplements</button>
+    ${fab}`;
 }
 
 /* ================= HABITS ================= */
 function pageHabits(T){
   const tabs=[['daily','Daily'],['overview','Overview']].map(([t,l])=>`<button data-act="tab" data-tab="${t}" aria-selected="${ui.tab===t}">${l}</button>`).join('');
-  return `${navBack()}<h1 class="title">Habits</h1><div class="seg" role="tablist">${tabs}</div>${ui.tab==='daily'?renderDaily(T):renderHabitOverview(T)}`;
+  return `<h1 class="title">Habits</h1><div class="seg" role="tablist">${tabs}</div>${ui.tab==='daily'?renderDaily(T):renderHabitOverview(T)}`;
 }
 
 function renderDaily(T){
@@ -836,7 +978,7 @@ function renderHabitOverview(T){
 /* ================= SLEEP ================= */
 function pageSleep(T){
   const tabs=[['log','Log'],['overview','Overview']].map(([t,l])=>`<button data-act="s-tab" data-tab="${t}" aria-selected="${ui.stab===t}">${l}</button>`).join('');
-  return `${navBack()}<h1 class="title">Sleep</h1><div class="seg" role="tablist">${tabs}</div>${ui.stab==='log'?renderSleepLog(T):renderSleepOverview(T)}`;
+  return `<h1 class="title">Sleep</h1><div class="seg" role="tablist">${tabs}</div>${ui.stab==='log'?renderSleepLog(T):renderSleepOverview(T)}`;
 }
 
 function barChart(items,maxMin,tid,h){
@@ -961,7 +1103,7 @@ function renderSleepOverview(T){
 /* ================= WORKOUTS ================= */
 function pageWorkouts(T){
   const tabs=[['log','Log'],['overview','Overview']].map(([t,l])=>`<button data-act="w-tab" data-tab="${t}" aria-selected="${ui.wtab===t}">${l}</button>`).join('');
-  return `${navBack()}<h1 class="title">Workouts</h1><div class="seg" role="tablist">${tabs}</div>${ui.wtab==='log'?renderWorkoutLog(T):renderWorkoutOverview(T)}`;
+  return `<h1 class="title">Workouts</h1><div class="seg" role="tablist">${tabs}</div>${ui.wtab==='log'?renderWorkoutLog(T):renderWorkoutOverview(T)}`;
 }
 
 function renderWorkoutLog(T){
@@ -1142,7 +1284,7 @@ function pageGoals(){
       <button class="plus" data-act="g-new" data-cat="${esc(cat)}" aria-label="Add goal to ${esc(cat)}">${ICON('M12 5v14M5 12h14')}</button></div>${rows}</section>`;
   }).join('');
   const body=goals.length?sections:`<div class="empty"><b>No goals yet</b>Add one below and file it under a category.</div>`;
-  return `${navBack()}<h1 class="title">Goals</h1>${body}<button class="fab" data-act="g-new" data-cat="">New goal</button>`;
+  return `<h1 class="title">Goals</h1>${body}<button class="fab" data-act="g-new" data-cat="">New goal</button>`;
 }
 
 /* ================= TO-DO ================= */
@@ -1153,7 +1295,7 @@ function pageTodo(T){
   const body = all.length
     ? open.map(t=>todoRow(t,T)).join('')+done.map(t=>todoRow(t,T)).join('')+(done.length?`<button class="link" data-act="t-clear">Clear ${done.length} done</button>`:'')
     : `<div class="empty"><b>No tasks</b>Add one with the button below.</div>`;
-  return `${navBack()}<h1 class="title">To-do</h1>${body}<button class="fab" data-act="t-new">New task</button>`;
+  return `<h1 class="title">To-do</h1>${body}<button class="fab" data-act="t-new">New task</button>`;
 }
 
 /* ---------- render ---------- */
@@ -1163,6 +1305,7 @@ function render(){
   let html;
   if(r==='habits') html=pageHabits(T);
   else if(r==='sleep') html=pageSleep(T);
+  else if(r==='supplements') html=pageSupplements(T);
   else if(r==='goals') html=pageGoals();
   else if(r==='todo') html=pageTodo(T);
   else if(r==='workouts'){
@@ -1176,8 +1319,10 @@ function render(){
   applyStatus();
   setupSwipes();
   startLiveTimer();
+  document.body.classList.toggle('no-tabbar', r==='workouts'&&p[1]==='live');
+  document.querySelectorAll('#tabbar a').forEach(a=>a.setAttribute('aria-current',a.dataset.route===(r||'')));
 }
-window.addEventListener('hashchange',()=>{ ui.edit=false; render(); window.scrollTo(0,0); });
+window.addEventListener('hashchange',()=>{ ui.edit=false; ui.supEdit=false; render(); window.scrollTo(0,0); });
 
 /* ---------- mutations ---------- */
 function commit(){ save(); render(); queuePush(); }
@@ -1376,6 +1521,34 @@ function refreshHabit(){
   } else fb.innerHTML='';
 }
 
+/* supplement sheet */
+function openSupplementSheet(id){
+  const it=id?store.supplements[id]:null;
+  sheet.classList.remove('popup');
+  sh={kind:'supplements',id:id||null,sched:it?.sched||'morning',time:it?.time||'09:00',confirm:false};
+  sheetBody.innerHTML=`
+    <input class="s-title" id="s-title" type="text" placeholder="Supplement name" maxlength="60" enterkeyhint="done" autocomplete="off">
+    <div class="dlabel">When</div>
+    <div class="chips" id="schedChips">
+      <button class="chip" data-sched="morning">Morning</button>
+      <button class="chip" data-sched="lunch">Lunch</button>
+      <button class="chip" data-sched="evening">Evening</button>
+      <button class="chip" data-sched="time">Specific time</button>
+    </div>
+    <div id="schedBody"></div>
+    <p class="msg" id="s-msg" role="status"></p>
+    ${actionsHTML(it?'Delete':'')}`;
+  $('#s-title').value=it?.t||'';
+  refreshSupplement();
+  sheet.showModal();
+  if(!it) $('#s-title').focus();
+}
+function refreshSupplement(){
+  sheetBody.querySelectorAll('[data-sched]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.sched===sh.sched));
+  const fb=$('#schedBody');
+  fb.innerHTML = sh.sched==='time' ? `<label class="field" style="margin-top:16px"><span>Time</span><input type="time" id="s-time" value="${esc(sh.time)}"></label>` : '';
+}
+
 /* sleep sheet with scroll wheels */
 const ITEM=36;
 const rd5 = x => Math.round(x/5)*5;
@@ -1500,6 +1673,12 @@ function saveSheet(){
     const id=sh.id||uid();
     const fields={t,kind:sh.freq,days:sh.freq==='days'?[...sh.days].sort((a,b)=>a-b):undefined,target:sh.freq==='weekly'?sh.target:undefined};
     store.habits[id]=prev?{...prev,...fields,u:now}:{id,...fields,s:key(today()),c:now,u:now};
+  } else if(sh.kind==='supplements'){
+    const time=sh.sched==='time'?($('#s-time')?.value||sh.time||'09:00'):undefined;
+    const prev=sh.id?store.supplements[sh.id]:null;
+    const id=sh.id||uid();
+    const fields={t,sched:sh.sched,time};
+    store.supplements[id]=prev?{...prev,...fields,u:now}:{id,...fields,c:now,u:now};
   } else if(sh.kind==='todos'){
     const n=$('#s-note').value.trim();
     const prev=sh.id?store.todos[sh.id]:null;
@@ -1533,6 +1712,8 @@ sheet.addEventListener('click',e=>{
   if(cp){ $('#s-cat').value=cp.dataset.catpick; syncCatChips(); return; }
   const fq=e.target.closest('[data-freq]');
   if(fq){ sh.freq=fq.dataset.freq; refreshHabit(); return; }
+  const sc=e.target.closest('[data-sched]');
+  if(sc){ sh.sched=sc.dataset.sched; refreshSupplement(); return; }
   const st=e.target.closest('[data-step]');
   if(st){ sh.target=Math.max(1,Math.min(7,sh.target+Number(st.dataset.step))); refreshHabit(); return; }
   const dy=e.target.closest('[data-day]');
@@ -1594,7 +1775,10 @@ async function afterLaunch(){
   maybePromptSleep();
 }
 
-sheet.addEventListener('change',e=>{ if(e.target.id==='s-date'){ sh.due=e.target.value||''; refreshChips(); } });
+sheet.addEventListener('change',e=>{
+  if(e.target.id==='s-date'){ sh.due=e.target.value||''; refreshChips(); }
+  else if(e.target.id==='s-time'){ sh.time=e.target.value||sh.time; }
+});
 sheet.addEventListener('input',e=>{
   if(e.target.id==='s-cat') syncCatChips();
   else if(e.target.id==='pk-q'){ sh.pq=e.target.value; refreshPickerList(); }
@@ -1654,6 +1838,9 @@ $('#view').addEventListener('click',e=>{
       const w=parseAmount(wRaw); addSet(wid,idx,isFinite(w)?w:0,r); break;
     }
     case 'set-rm': removeSet(routeParts()[2],Number(t.dataset.exidx),Number(t.dataset.setidx)); break;
+    case 'sup-new': openSupplementSheet(); break;
+    case 'sup-edit': openSupplementSheet(t.dataset.id); break;
+    case 'sup-editmode': ui.supEdit=!ui.supEdit; render(); break;
     case 't-new': openSheet('todos'); break;
     case 't-edit': openSheet('todos',t.dataset.id); break;
     case 't-toggle': toggleItem('todos',t.dataset.id); break;
@@ -1778,7 +1965,7 @@ $('#f-import').addEventListener('change',async e=>{
   try{
     const inc=normalize(JSON.parse(await f.text()));
     store=merge(store,inc); ensureSeeds(); save(); render(); queuePush();
-    msg(`Imported ${Object.keys(inc.log).length} habit entries, ${Object.keys(inc.sleep).length} sleep entries, ${Object.keys(inc.workouts).length} workouts, ${Object.keys(inc.goals).length} goals, ${Object.keys(inc.todos).length} tasks.`);
+    msg(`Imported ${Object.keys(inc.log).length} habit entries, ${Object.keys(inc.sleep).length} sleep entries, ${Object.keys(inc.workouts).length} workouts, ${Object.keys(inc.supplements).length} supplements, ${Object.keys(inc.goals).length} goals, ${Object.keys(inc.todos).length} tasks.`);
   }catch{ msg('That file could not be read.'); }
   e.target.value='';
 });
@@ -1795,6 +1982,7 @@ document.addEventListener('visibilitychange',()=>{
 window.addEventListener('online',()=>{ if(configured()) sync(); });
 
 save();
+paintTabIcons();
 setStatus(configured()?'busy':'local');
 render();
 afterLaunch();
