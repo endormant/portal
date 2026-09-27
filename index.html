@@ -290,7 +290,7 @@ body.no-tabbar .finishbar{padding-bottom:max(14px,calc(env(safe-area-inset-botto
 .ringwrap{display:flex;justify-content:center;margin:6px 0 4px}
 .ring{width:min(190px,58vw);height:auto}
 .ring-bg{fill:none;stroke:var(--line);stroke-width:11}
-.ring-fg{fill:none;stroke:var(--ink);stroke-width:11;stroke-linecap:round;transition:stroke-dashoffset .4s ease}
+.ring-fg{fill:none;stroke:var(--ink);stroke-width:11;stroke-linecap:round}
 .ring-pct{fill:var(--text);font-size:34px;font-weight:700;letter-spacing:-.03em}
 .ring-sub{fill:var(--muted);font-size:12.5px}
 .bedcard{display:flex;align-items:center;gap:14px;background:var(--surface);border-radius:18px;padding:16px 18px;margin:22px 0 30px}
@@ -368,6 +368,11 @@ dialog.popup{margin:auto;width:min(340px,calc(100% - 40px));border-radius:24px}
 .popup .ssum{justify-content:center}
 .popup .actions{flex-wrap:nowrap;margin-top:14px}
 .popup .actions .btn{flex:1;text-align:center;padding:13px 10px}
+
+@keyframes viewIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+#view.anim{animation:viewIn .22s cubic-bezier(.3,.8,.4,1) both}
+.ring-fg{transition:stroke-dashoffset .7s cubic-bezier(.3,.8,.4,1)}
+.bar i,.gbar i{transition:width .5s cubic-bezier(.3,.8,.4,1)}
 
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
@@ -811,7 +816,7 @@ function ringSVG(pct,label){
   const r=72,C=2*Math.PI*r,off=C*(1-Math.min(1,pct));
   return `<svg class="ring" viewBox="0 0 180 180"><g transform="rotate(-90 90 90)">
       <circle class="ring-bg" cx="90" cy="90" r="${r}"></circle>
-      <circle class="ring-fg" cx="90" cy="90" r="${r}" stroke-dasharray="${C.toFixed(1)}" stroke-dashoffset="${off.toFixed(1)}"></circle>
+      <circle class="ring-fg" cx="90" cy="90" r="${r}" stroke-dasharray="${C.toFixed(1)}" stroke-dashoffset="${C.toFixed(1)}" data-target="${off.toFixed(1)}"></circle>
     </g>
     <text class="ring-pct" x="90" y="95" text-anchor="middle">${Math.round(pct*100)}%</text>
     <text class="ring-sub" x="90" y="115" text-anchor="middle">${esc(label)}</text></svg>`;
@@ -833,9 +838,9 @@ function pagePortal(T){
   const tasksLeft=live(store.todos).filter(t=>!t.x&&t.d&&t.d<=tk).sort(byDue);
   const taskRows=tasksLeft.map(t=>todoRow(t,T)).join('');
 
-  const sec=(icon,name,rows,href)=>{
-    if(!rows) return `<section class="homesec"><div class="sh2"><h2>${icon} ${name}</h2><small>All done</small></div><div class="allclear">Nothing left for today.</div></section>`;
-    return `<section class="homesec"><div class="sh2"><h2>${icon} ${name}</h2><a href="${href}" style="font-size:13px;color:var(--muted)">See all</a></div>${rows}</section>`;
+  const sec=(name,rows,href)=>{
+    if(!rows) return `<section class="homesec"><div class="sh2"><h2>${name}</h2><small>All done</small></div><div class="allclear">Nothing left for today.</div></section>`;
+    return `<section class="homesec"><div class="sh2"><h2>${name}</h2><a href="${href}" style="font-size:13px;color:var(--muted)">See all</a></div>${rows}</section>`;
   };
 
   return `
@@ -843,10 +848,10 @@ function pagePortal(T){
     <h1 class="big">Portal</h1>
     <p class="sub">${fmt(T,{weekday:'long',day:'numeric',month:'long'})}</p>
     <div class="ringwrap">${ringSVG(comp.pct,comp.total?`${comp.done} of ${comp.total} done`:'Nothing tracked yet')}</div>
-    <div class="bedcard"><span class="bi">🌙</span><div><b>Bed by ${tm(bt.bed)}</b><span>${bt.has?'Based on your recent wake times':'Default 7:00 AM wake, log sleep to personalise'}</span></div></div>
-    ${sec('','Supplements',supRows,'#/supplements')}
-    ${sec('','Tasks',taskRows,'#/todo')}
-    ${sec('','Habits',habitRows,'#/habits')}`;
+    <div class="bedcard"><span class="bi">${TAB_ICONS.sleep.replace('width="22" height="22"','width="24" height="24"')}</span><div><b>Bed by ${tm(bt.bed)}</b><span>${bt.has?'Based on your recent wake times':'Default 7:00 AM wake, log sleep to personalise'}</span></div></div>
+    ${sec('Supplements',supRows,'#/supplements')}
+    ${sec('Tasks',taskRows,'#/todo')}
+    ${sec('Habits',habitRows,'#/habits')}`;
 }
 
 /* ================= SUPPLEMENTS ================= */
@@ -1321,6 +1326,11 @@ function render(){
   startLiveTimer();
   document.body.classList.toggle('no-tabbar', r==='workouts'&&p[1]==='live');
   document.querySelectorAll('#tabbar a').forEach(a=>a.setAttribute('aria-current',a.dataset.route===(r||'')));
+  const view=$('#view');
+  view.classList.remove('anim'); void view.offsetWidth; view.classList.add('anim');
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{
+    document.querySelectorAll('.ring-fg[data-target]').forEach(c=>{ c.style.strokeDashoffset=c.dataset.target; });
+  }));
 }
 window.addEventListener('hashchange',()=>{ ui.edit=false; ui.supEdit=false; render(); window.scrollTo(0,0); });
 
